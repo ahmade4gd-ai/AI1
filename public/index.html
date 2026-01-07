@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS ALPHA | GITHUB MODELS</title>
+    <style>
+        body { background-color: #050505; color: #00ff41; font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        h1 { text-align: center; text-shadow: 0 0 10px #00ff41; }
+        .box { border: 1px solid #333; background: #0a0a0a; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        textarea { width: 100%; background: #111; color: #fff; border: 1px solid #444; padding: 10px; min-height: 80px; }
+        button { background: #00ff41; color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
+        button:hover { background: #00cc33; }
+        .log-entry { margin-bottom: 15px; border-bottom: 1px dashed #444; padding-bottom: 10px; }
+        .agent-name { color: #00ccff; font-weight: bold; }
+        pre { background: #111; padding: 10px; overflow-x: auto; color: #fff; }
+        #loader { display: none; text-align: center; color: yellow; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛡️ AEGIS EVOLUTION SYSTEM</h1>
+        
+        <div class="box">
+            <p>أدخل المهمة البرمجية (سيتم تفعيل 5 نماذج فائقة):</p>
+            <textarea id="taskInput" placeholder="مثال: اكتب كود بايثون لسكربت يقوم بتحليل البيانات..."></textarea>
+            <br><br>
+            <button onclick="startSystem()">🚀 تشغيل المحرك (Start Engine)</button>
+        </div>
+
+        <div id="loader">⚡ جاري الاتصال بـ DeepSeek, Grok, Microsoft, Llama...</div>
+
+        <div id="output" class="box" style="display:none;"></div>
+    </div>
+
+    <script>
+        async function startSystem() {
+            const task = document.getElementById('taskInput').value;
+            if(!task) return alert("اكتب شيئاً!");
+            
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('output').style.display = 'none';
+            document.getElementById('output').innerHTML = "";
+
+            try {
+                const res = await fetch('/api/start', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ task: task })
+                });
+
+                const data = await res.json();
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('output').style.display = 'block';
+
+                if(data.status === "error") {
+                    document.getElementById('output').innerHTML = `<p style="color:red">خطأ: ${data.message}</p>`;
+                } else {
+                    data.logs.forEach(log => {
+                        const html = `
+                            <div class="log-entry">
+                                <span class="agent-name">[${log.agent}]</span>
+                                <pre>${log.content.replace(/</g, "&lt;")}</pre>
+                            </div>
+                        `;
+                        document.getElementById('output').innerHTML += html;
+                    });
+                }
+            } catch (e) {
+                alert("فشل الاتصال بالسيرفر");
+            }
+        }
+    </script>
+</body>
+    </html>
+            
