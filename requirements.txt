@@ -1,4 +1,0 @@
-openai
-z3-solver
-requests
-colorama
